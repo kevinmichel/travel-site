@@ -1,8 +1,36 @@
 {
   "name": "travel-site",
   "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
   "dependencies": {
+    "browsersync": "0.0.1-security",
+    "gulp": "^4.0.2",
+    "gulp-watch": "^5.0.1",
     "jquery": "^3.4.1",
     "normalize.css": "^8.0.1"
-  }
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.7",
+    "gulp-autoprefixer": "^6.1.0",
+    "gulp-postcss": "^8.0.0",
+    "gulp-uglify": "^3.0.2",
+    "postcss-import": "^12.0.1",
+    "postcss-mixins": "^6.2.1",
+    "postcss-nested": "^4.1.2",
+    "postcss-simple-vars": "^5.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kmanjam/travel-site.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kmanjam/travel-site/issues"
+  },
+  "homepage": "https://github.com/kmanjam/travel-site#readme"
 }
