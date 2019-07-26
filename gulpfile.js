@@ -7,11 +7,16 @@ const cssNested = require('postcss-nested');
 const cssImport = require('postcss-import');
 const mixins = require('postcss-mixins');
 const svgSprite = require('gulp-svg-sprite');
+const rename = require('gulp-rename');
+const del = require('del');
+
+// Sprites Magic
 
 // Object Literal
 var config = {
     mode: {
         css: {
+            sprite: 'sprite.svg',
             render: {
                 css: {
                     template: './gulp/templates/sprite.css'
@@ -21,11 +26,32 @@ var config = {
     }
 }
 
+function beginClean() {
+    return del(['./app/temp/sprite', './app/asset/images/sprites']);
+}
+
 function createSprite() {
     return src('./app/assets/images/icons/**/*.svg')
   .pipe(svgSprite(config))
   .pipe(dest('./app/temp/sprite/'));
 }
+
+function copySpriteGraphic() {
+    return src('./app/temp/sprite/css/**/*.svg')
+        .pipe(dest('./app/assets/images/sprites'));
+}
+
+function copySpriteCss() {
+    return src('./app/temp/sprite/css/*.css')
+        .pipe(rename('_sprite.css'))
+        .pipe(dest('./app/assets/styles/modules'));
+}
+
+function endClean() {
+    return del(['./app/temp/sprite']);
+}
+
+// CSS Magic
 
 function css() {
     return src('app/assets/styles/styles.css')
@@ -60,7 +86,7 @@ function serve() {
 
 exports.serve = serve;
 
-exports.createSprite = createSprite;
+exports.icons = series(beginClean, createSprite, copySpriteGraphic, copySpriteCss, endClean);
 
 // exports.reload = reload;
 
