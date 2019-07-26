@@ -6,6 +6,26 @@ const Cssvars = require('postcss-simple-vars');
 const cssNested = require('postcss-nested');
 const cssImport = require('postcss-import');
 const mixins = require('postcss-mixins');
+const svgSprite = require('gulp-svg-sprite');
+
+// Object Literal
+var config = {
+    mode: {
+        css: {
+            render: {
+                css: {
+                    template: './gulp/templates/sprite.css'
+                }
+            }
+        }
+    }
+}
+
+function createSprite() {
+    return src('./app/assets/images/icons/**/*.svg')
+  .pipe(svgSprite(config))
+  .pipe(dest('./app/temp/sprite/'));
+}
 
 function css() {
     return src('app/assets/styles/styles.css')
@@ -39,6 +59,9 @@ function serve() {
 }
 
 exports.serve = serve;
+
+exports.createSprite = createSprite;
+
 // exports.reload = reload;
 
 // exports.default = function() {
