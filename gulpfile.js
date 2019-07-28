@@ -9,6 +9,7 @@ const mixins = require('postcss-mixins');
 const svgSprite = require('gulp-svg-sprite');
 const rename = require('gulp-rename');
 const del = require('del');
+const hexRgba = require('postcss-hexrgba');
 
 // Sprites Magic
 
@@ -55,7 +56,7 @@ function endClean() {
 
 function css() {
     return src('app/assets/styles/styles.css')
-    .pipe(postcss([cssImport, mixins, Cssvars, cssNested, Autoprefixer]))
+    .pipe(postcss([cssImport, mixins, Cssvars, hexRgba, cssNested, Autoprefixer]))
     .on('error', function(errorInfo){
         console.log(errorInfo.toString());
         this.emit('end');
@@ -81,20 +82,11 @@ function serve() {
         browserSync.reload();
     });
 
-    watch('app/assets/styles/**/*.css', series(css, cssInject));
+    watch('./app/assets/styles/**/*.css', series(css, cssInject));
+
 }
 
 exports.serve = serve;
 
 exports.icons = series(beginClean, createSprite, copySpriteGraphic, copySpriteCss, endClean);
 
-// exports.reload = reload;
-
-// exports.default = function() {
-//     watch('app/assets/styles/**/*.css', css);
-// };
-
-// function copy() {
-//     return src('app/assets/styles/styles.css')
-//       .pipe(dest('app/temp/styles'));
-// }
