@@ -11,6 +11,8 @@ const rename = require('gulp-rename');
 const del = require('del');
 const hexRgba = require('postcss-hexrgba');
 const webpack = require('webpack');
+var webpackDevMiddleware = require('webpack-dev-middleware');
+var webpackHotMiddleware = require('webpack-hot-middleware');
 
 // Sprites Magic
 
@@ -72,12 +74,12 @@ function cssInject() {
 
 // Compile JS files
 
-function scripts() {
-    webpack(require('./webpack.config'), function() {
-            console.log('webpack completed!');
-        }
-    );
-}
+// function scripts() {
+//     webpack(require('./webpack.config'), function() {
+//             console.log('webpack completed!');
+//         }
+//     );
+// }
 
 function scriptsRefresh() {
     browserSync.reload();
@@ -85,24 +87,41 @@ function scriptsRefresh() {
 
 // live reload server + gulp watch
 
+function bundleScripts() {
+    webpack(webpackConfig);
+}
+
+var webpackConfig = require('./webpack.config');
+var bundler = webpack(webpackConfig);
+
 function serve() {
 
     browserSync.init({
-        notify: false,
         server: {
-          baseDir: "app"
-        }
-      });
+            baseDir: "./app",
+            middleware: [
+                webpackDevMiddleware(bundler, {
+                    publicPath: webpackConfig.output.publicPath,
+                    stats: { colors: true }
+                }),
+                webpackHotMiddleware(bundler)
+                        ]
+                }
+            });
+
 
       watch('app/index.html', function() {
         browserSync.reload();
     });
 
     watch('./app/assets/styles/**/*.css', series(css, cssInject));
-    watch('./src/**/*.js', series(scripts, scriptsRefresh));
+    watch('./src/**/*.js', series(bundleScripts, scriptsRefresh));
+    // watch('./src/**/*.js', function() {
+    //     browserSync.reload();
+    // });
 }
 
-exports.scripts = scripts;
+// exports.scripts = scripts;
 
 exports.serve = serve;
 
