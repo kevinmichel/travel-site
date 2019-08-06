@@ -10,6 +10,7 @@ const svgSprite = require('gulp-svg-sprite');
 const rename = require('gulp-rename');
 const del = require('del');
 const hexRgba = require('postcss-hexrgba');
+const webpack = require('webpack');
 
 // Sprites Magic
 
@@ -69,6 +70,21 @@ function cssInject() {
     .pipe(browserSync.stream());
 }
 
+// Compile JS files
+
+function scripts() {
+    webpack(require('./webpack.config'), function() {
+            console.log('webpack completed!');
+        }
+    );
+}
+
+function scriptsRefresh() {
+    browserSync.reload();
+}
+
+// live reload server + gulp watch
+
 function serve() {
 
     browserSync.init({
@@ -83,10 +99,14 @@ function serve() {
     });
 
     watch('./app/assets/styles/**/*.css', series(css, cssInject));
-
+    watch('./src/**/*.js', series(scripts, scriptsRefresh));
 }
+
+exports.scripts = scripts;
 
 exports.serve = serve;
 
 exports.icons = series(beginClean, createSprite, copySpriteGraphic, copySpriteCss, endClean);
+
+
 
