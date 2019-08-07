@@ -26,6 +26,7 @@
     "postcss-mixins": "^6.2.1",
     "postcss-nested": "^4.1.2",
     "postcss-simple-vars": "^5.0.2",
+    "waypoints": "^4.0.1",
     "webpack": "^4.38.0",
     "webpack-cli": "^3.3.6",
     "webpack-dev-middleware": "^3.7.0",
