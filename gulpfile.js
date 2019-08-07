@@ -97,6 +97,7 @@ var bundler = webpack(webpackConfig);
 function serve() {
 
     browserSync.init({
+        notify: false,
         server: {
             baseDir: "./app",
             middleware: [
