@@ -11,15 +11,41 @@ const rename = require('gulp-rename');
 const del = require('del');
 const hexRgba = require('postcss-hexrgba');
 const webpack = require('webpack');
+// const svg2png = require('gulp-svg2png');
+// const myModernizr = require('gulp-modernizr');
+
 var webpackDevMiddleware = require('webpack-dev-middleware');
 var webpackHotMiddleware = require('webpack-hot-middleware');
 
+// Custom gulp build of modernizr ** Not working ** 
+
+// function myModernizr() {
+//     return src(['./app/assets/styles/**/*.css', './app/dist/**/*.js'])
+//     .pipe(modernizr({
+//         "options": [
+//             "setClasses"
+//         ]
+//     }))
+//     .pipe(dest('./app/dist/'));
+// }
+
 // Sprites Magic
 
-// Object Literal
 var config = {
+    shape: {
+        spacing: {
+            padding: 1
+        }
+    },
     mode: {
         css: {
+            // variables: {
+            //     replaceSVGwithPng: function() {
+            //         return function(sprite, render) {
+            //             return render(sprite).splt('.svg').join('.png');
+            //         }
+            //     }
+            // },
             sprite: 'sprite.svg',
             render: {
                 css: {
@@ -36,12 +62,18 @@ function beginClean() {
 
 function createSprite() {
     return src('./app/assets/images/icons/**/*.svg')
-  .pipe(svgSprite(config))
-  .pipe(dest('./app/temp/sprite/'));
+    .pipe(svgSprite(config))
+    .pipe(dest('./app/temp/sprite/'));
 }
 
+// function createPngCopy() {
+//     return src('./app/temp/sprite/css/*.svg')
+//     .pipe(svg2png())
+//     .pipe(dest('.app/temp/sprite/css'));
+// }
+
 function copySpriteGraphic() {
-    return src('./app/temp/sprite/css/**/*.svg')
+    return src('./app/temp/sprite/css/**/*.{svg,png}')
         .pipe(dest('./app/assets/images/sprites'));
 }
 
@@ -125,7 +157,7 @@ function serve() {
 // exports.scripts = scripts;
 
 exports.serve = serve;
-
+// exports.myModernizr = myModernizr;
 exports.icons = series(beginClean, createSprite, copySpriteGraphic, copySpriteCss, endClean);
 
 
