@@ -12,10 +12,11 @@ const del = require('del');
 const hexRgba = require('postcss-hexrgba');
 const webpack = require('webpack');
 const svg2png = require('gulp-svg2png');
-const imagemin = require('gulp-imagemin');
+
 
 // var myModernizr = require('gulp-modernizr');
-var usemin = require('gulp-usemin');
+// var usemin = require('gulp-usemin');
+// var imagemin = require('gulp-imagemin');
 
 // Custom Webpack DevMiddleware ** Live Reload Not working for JS files... ** //
 var webpackDevMiddleware = require('webpack-dev-middleware');
@@ -164,27 +165,27 @@ exports.icons = series(beginClean, createSprite, createPngCopy, copySpriteGraphi
 
 // *** Automated Production build *** //
 
-function deleteProdFolder() {
-    return del("./prod");
-}
+// function deleteProdFolder() {
+//     return del("./prod");
+// }
 
-function optimizeImages() {
-    return src(['./app/assets/images/**/*', '!./app/assets/images/icons', '!./app/assets/images/icons/**/*' ])
-    .pipe(imagemin({
-        progressive: true, // *helps with jpg files
-        interlaced: true, // *helps with png files
-        multipass: true // *helps with svg files
-    }))
-    .pipe(dest('./prod/assets/images'));
-}
+// function optimizeImages() {
+//     return src(['./app/assets/images/**/*', '!./app/assets/images/icons', '!./app/assets/images/icons/**/*' ])
+//     .pipe(imagemin({
+//         progressive: true, // *helps with jpg files
+//         interlaced: true, // *helps with png files
+//         multipass: true // *helps with svg files
+//     }))
+//     .pipe(dest('./prod/assets/images'));
+// }
 
 // usemin is depreciated (use Webpack or Browserify instead)
 
-function usemin() {
-    return src('./app/index.html')
-    .pipe(usemin())
-    .pipe(dest('./prod'));
-}
+// function usemin() {
+//     return src('./app/index.html')
+//     .pipe(usemin())
+//     .pipe(dest('./prod'));
+// }
 
-exports.prod = series(deleteProdFolder, optimizeImages, usemin);
+// exports.prod = series(deleteProdFolder, optimizeImages, usemin);
 
