@@ -9,13 +9,14 @@ module.exports = {
         main: [
             'webpack/hot/dev-server',
             'webpack-hot-middleware/client',            
-            "./src/index.js"        ]
+            "./src/index.js"        ],
+        Vendor: "./src/js/Vendor.js"    
     },
     output: { 
         path: path.resolve(__dirname, './app/dist/'),
         path: path.join(__dirname, './app/dist'),
         publicPath: './app/dist',
-        filename: 'app.bundle.js'
+        filename: '[name].js'
     },  
 //   entry: './src/index.js',
 //   output: {
