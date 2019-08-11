@@ -12,12 +12,17 @@ const del = require('del');
 const hexRgba = require('postcss-hexrgba');
 const webpack = require('webpack');
 const svg2png = require('gulp-svg2png');
-// const myModernizr = require('gulp-modernizr');
+const imagemin = require('gulp-imagemin');
 
+// var myModernizr = require('gulp-modernizr');
+var usemin = require('gulp-usemin');
+
+// Custom Webpack DevMiddleware ** Live Reload Not working for JS files... ** //
 var webpackDevMiddleware = require('webpack-dev-middleware');
 var webpackHotMiddleware = require('webpack-hot-middleware');
 
-// Custom gulp build of modernizr ** Not working ** 
+// Custom gulp build of modernizr ** Not working ** //
+// **try this link instead: https://modernizr.com/download?setclasses //
 
 // function myModernizr() {
 //     return src(['./app/assets/styles/**/*.css', './app/dist/**/*.js'])
@@ -29,7 +34,7 @@ var webpackHotMiddleware = require('webpack-hot-middleware');
 //     .pipe(dest('./app/dist/'));
 // }
 
-// Sprites Magic
+// *** Sprites Magic *** //
 
 var config = {
     shape: {
@@ -87,7 +92,7 @@ function endClean() {
     return del(['./app/temp/sprite']);
 }
 
-// CSS Magic
+// *** CSS Magic *** //
 
 function css() {
     return src('app/assets/styles/styles.css')
@@ -104,20 +109,15 @@ function cssInject() {
     .pipe(browserSync.stream());
 }
 
-// Compile JS files
+// *** Compile JS files with Webpack *** //
 
-// function scripts() {
-//     webpack(require('./webpack.config'), function() {
-//             console.log('webpack completed!');
-//         }
-//     );
-// }
+// live reload scripts function
 
 function scriptsRefresh() {
     browserSync.reload();
 }
 
-// live reload server + gulp watch
+// run webpack with config file
 
 function bundleScripts() {
     webpack(webpackConfig);
@@ -125,6 +125,8 @@ function bundleScripts() {
 
 var webpackConfig = require('./webpack.config');
 var bundler = webpack(webpackConfig);
+
+// *** Live Reloads with browserSync server + gulp watch *** //
 
 function serve() {
 
@@ -155,10 +157,34 @@ function serve() {
 }
 
 // exports.scripts = scripts;
+// exports.myModernizr = myModernizr;
 
 exports.serve = serve;
-// exports.myModernizr = myModernizr;
 exports.icons = series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCss, endClean);
 
+// *** Automated Production build *** //
 
+function deleteProdFolder() {
+    return del("./prod");
+}
+
+function optimizeImages() {
+    return src(['./app/assets/images/**/*', '!./app/assets/images/icons', '!./app/assets/images/icons/**/*' ])
+    .pipe(imagemin({
+        progressive: true, // *helps with jpg files
+        interlaced: true, // *helps with png files
+        multipass: true // *helps with svg files
+    }))
+    .pipe(dest('./prod/assets/images'));
+}
+
+// usemin is depreciated (use Webpack or Browserify instead)
+
+function usemin() {
+    return src('./app/index.html')
+    .pipe(usemin())
+    .pipe(dest('./prod'));
+}
+
+exports.prod = series(deleteProdFolder, optimizeImages, usemin);
 
