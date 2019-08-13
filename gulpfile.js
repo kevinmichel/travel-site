@@ -11,8 +11,6 @@ const rename = require('gulp-rename');
 const del = require('del');
 const hexRgba = require('postcss-hexrgba');
 const webpack = require('webpack');
-const svg2png = require('gulp-svg2png');
-
 
 // var myModernizr = require('gulp-modernizr');
 // var usemin = require('gulp-usemin');
@@ -45,13 +43,6 @@ var config = {
     },
     mode: {
         css: {
-            variables: {
-                replaceSVGwithPng: function() {
-                    return function(sprite, render) {
-                        return render(sprite).splt('.svg').join('.png');
-                    }
-                }
-            },
             sprite: 'sprite.svg',
             render: {
                 css: {
@@ -70,12 +61,6 @@ function createSprite() {
     return src('./app/assets/images/icons/**/*.svg')
     .pipe(svgSprite(config))
     .pipe(dest('./app/temp/sprite/'));
-}
-
-function createPngCopy() {
-    return src('./app/temp/sprite/css/*.svg')
-    .pipe(svg2png())
-    .pipe(dest('./app/temp/sprite/css'));
 }
 
 function copySpriteGraphic() {
@@ -161,7 +146,7 @@ function serve() {
 // exports.myModernizr = myModernizr;
 
 exports.serve = serve;
-exports.icons = series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCss, endClean);
+exports.icons = series(beginClean, createSprite, copySpriteGraphic, copySpriteCss, endClean);
 
 // *** Automated Production build *** //
 
