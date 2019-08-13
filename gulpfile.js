@@ -12,9 +12,19 @@ const del = require('del');
 const hexRgba = require('postcss-hexrgba');
 const webpack = require('webpack');
 
+
 // var myModernizr = require('gulp-modernizr');
 // var usemin = require('gulp-usemin');
-// var imagemin = require('gulp-imagemin');
+
+var imagemin = require('gulp-imagemin');
+var rev = require('gulp-rev');
+var uglify = require('gulp-uglify');
+var concat = require('gulp-concat');
+var cleanCss = require('gulp-clean-css');
+
+
+// Readable stream is not being used right now
+var pipeline = require('readable-stream').pipeline;
 
 // Custom Webpack DevMiddleware ** Live Reload Not working for JS files... ** //
 var webpackDevMiddleware = require('webpack-dev-middleware');
@@ -150,19 +160,59 @@ exports.icons = series(beginClean, createSprite, copySpriteGraphic, copySpriteCs
 
 // *** Automated Production build *** //
 
-// function deleteProdFolder() {
-//     return del("./prod");
-// }
+var imageFiles = ['./app/assets/images/**/*', '!./app/assets/images/icons', '!./app/assets/images/icons/**/*']
+var cssFiles = ['app/temp/styles/*.css']
+var jsFiles = ['./app/dist/*.js', '!./app/dist/Vendor.js']
+var vendorFiles = ['./app/dist/Vendor.js']
 
-// function optimizeImages() {
-//     return src(['./app/assets/images/**/*', '!./app/assets/images/icons', '!./app/assets/images/icons/**/*' ])
-//     .pipe(imagemin({
-//         progressive: true, // *helps with jpg files
-//         interlaced: true, // *helps with png files
-//         multipass: true // *helps with svg files
-//     }))
-//     .pipe(dest('./prod/assets/images'));
-// }
+function gulpClean() {
+    return del("prod");
+}
+
+function optimizeImages() {
+    return src(imageFiles)
+    .pipe(imagemin({
+        progressive: true, // *helps with jpg files
+        interlaced: true, // *helps with png files
+        multipass: true // *helps with svg files
+    }))
+    .pipe(dest('prod/assets/images'));
+}
+
+function compressVendorJs() {
+    return src(vendorFiles)
+    .pipe(uglify())
+    .pipe(rev())
+    .pipe(dest('prod/assets/scripts/vendor'));
+}
+
+function compressJs() {
+    return src(jsFiles)
+    // gulp-concat = concatenates your JS files into one large file
+    .pipe(concat('scripts.js'))
+    // Minify the Js file
+    .pipe(uglify())
+    // gulp-rev = file revisioning by appending content hash to filenames
+    .pipe(rev())
+    // Output
+    .pipe(dest('prod/assets/scripts/js'));
+}
+
+function CSSminify() {
+    return src(cssFiles)
+    // Minify the CSS files
+    .pipe(cleanCss({compatibility: 'ie8'}))
+    // Output    
+    .pipe(dest('prod/assets/styles'));
+}
+
+function copyHTML() {
+    return src('app/index.html')
+    // Output    
+    .pipe(dest('prod'));
+}
+
+exports.prod = series(gulpClean, optimizeImages, compressVendorJs, compressJs, CSSminify, copyHTML);
 
 // usemin is depreciated (use Webpack or Browserify instead)
 
@@ -172,5 +222,4 @@ exports.icons = series(beginClean, createSprite, copySpriteGraphic, copySpriteCs
 //     .pipe(dest('./prod'));
 // }
 
-// exports.prod = series(deleteProdFolder, optimizeImages, usemin);
 
