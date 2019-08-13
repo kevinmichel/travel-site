@@ -165,31 +165,47 @@ var cssFiles = ['app/temp/styles/*.css']
 var jsFiles = ['./app/dist/*.js', '!./app/dist/Vendor.js']
 var vendorFiles = ['./app/dist/Vendor.js']
 
+// var pathsToCopy = [
+//     './app/**/*',
+//     '!./app/index.html',
+//     '!./app/assets/images/**',
+//     '!./app/assets/styles/**',
+//     '!./app/assets/scripts/**',
+//     '!./app/temp',
+//     '!./app/temp/**'
+//   ]
+
+// function copyGeneralFiles() {
+//     return src(pathsToCopy)
+//     .pipe(dest('docs'));
+// }
+
 function gulpClean() {
-    return del("prod");
+    return del('docs');
 }
 
-function optimizeImages() {
-    return src(imageFiles)
-    .pipe(imagemin([
-        imagemin.gifsicle({interlaced: true}),
-        imagemin.jpegtran({progressive: true}),
-        imagemin.optipng({optimizationLevel: 5}),
-        imagemin.svgo({
-            plugins: [
-                {removeViewBox: true},
-                {cleanupIDs: false}
-            ]
-        })
-    ]))
-    .pipe(dest('prod/assets/images'));
-}
+// function optimizeImages() {
+//     return src(imageFiles)
+//     .pipe(imagemin())
+//     // .pipe(imagemin([
+//     //     imagemin.gifsicle({interlaced: true}),
+//     //     imagemin.jpegtran({progressive: true}),
+//     //     imagemin.optipng({optimizationLevel: 5}),
+//     //     imagemin.svgo({
+//     //         plugins: [
+//     //             {removeViewBox: true},
+//     //             {cleanupIDs: false}
+//     //         ]
+//     //     })
+//     // ]))
+//     .pipe(dest('prod/assets/images'));
+// }
 
 function compressVendorJs() {
     return src(vendorFiles)
     .pipe(uglify())
     .pipe(rev())
-    .pipe(dest('prod/assets/scripts/vendor'));
+    .pipe(dest('docs/assets/scripts/vendor'));
 }
 
 function compressJs() {
@@ -201,7 +217,7 @@ function compressJs() {
     // gulp-rev = file revisioning by appending content hash to filenames
     .pipe(rev())
     // Output
-    .pipe(dest('prod/assets/scripts/js'));
+    .pipe(dest('docs/assets/scripts/js'));
 }
 
 function CSSminify() {
@@ -209,16 +225,33 @@ function CSSminify() {
     // Minify the CSS files
     .pipe(cleanCss({compatibility: 'ie8'}))
     // Output    
-    .pipe(dest('prod/assets/styles'));
+    .pipe(dest('docs/assets/styles'));
 }
 
 function copyHTML() {
     return src('app/index.html')
     // Output    
-    .pipe(dest('prod'));
+    .pipe(dest('docs'));
 }
 
-exports.prod = series(gulpClean, optimizeImages, compressVendorJs, compressJs, CSSminify, copyHTML);
+function copyImages() {
+    return src('app/assets/images')
+    // Output    
+    .pipe(dest('docs/assets/images'));
+}
+
+function previewSever() {
+    browserSync.init({
+        notify: false,
+        server: {
+            baseDir: "docs"
+        }
+    });
+}
+
+exports.prod = series(gulpClean, compressVendorJs, compressJs, CSSminify, copyHTML, copyImages, previewSever);
+
+// optimizeImages
 
 // usemin is depreciated (use Webpack or Browserify instead)
 
